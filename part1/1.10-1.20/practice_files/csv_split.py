@@ -2,6 +2,7 @@
 import csv
 import argparse
 import os
+import sys
 
 """
 csv_split.py
@@ -48,7 +49,7 @@ def validate_csv(input_file, row_limit):
     rows = 0
     for row in my_csv:
       rows += 1
-  # Returns true if the number of rows is greater than the row limit (not counting the header)
+  # Returns true if input file is in spec with row limit
   return rows > row_limit
 
 def validate_output(output_file):
@@ -119,12 +120,14 @@ def split_csv(input_csv, row_limit, output):
 my_args = get_args()
 
 # Validating input file exists
-validate_input(my_args.input) or die("ERROR: Input file not found.")
+if not validate_input(my_args.input):
+  sys.exit("ERROR: Input file not found.")
 
 # Validating input file is a valid csv with enough rows
-validate_csv(my_args.input, my_args.rows) or die("ERROR: Input .csv file not valid for number of rows.")
+if not validate_csv(my_args.input, my_args.rows):
+  sys.exit("ERROR: Input .csv has fewer than {} rows.".format(my_args.rows))
 
-# Validate output csv name doesn't end with .csv
+# Validate output csv name doesn't end with .csv and assign good output name to a variable
 good_output = validate_output(my_args.output)
 
 # Main split function, writing the output files along the way
